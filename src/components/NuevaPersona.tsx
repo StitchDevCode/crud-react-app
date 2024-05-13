@@ -1,4 +1,4 @@
-import {ChangeEvent, useState} from 'react'
+import {ChangeEvent, FormEvent, useState} from 'react'
 import { appsetting } from '../settings/appseting'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
@@ -51,6 +51,11 @@ export const NuevoEmpleado = () => {
       }
     }
     
+    const handleSubmit = (event: FormEvent) => {
+      event.preventDefault(); // Evita que el formulario se envíe por defecto
+      guardar(); // Llama a la función de guardar
+  }
+
 
     return(
         <Container className='mt-4'>
@@ -58,7 +63,7 @@ export const NuevoEmpleado = () => {
              <Col>
                   <h4>Nueva Persona</h4>
                   <hr />
-                  <Form>
+                  <Form onSubmit={handleSubmit}>
                       <FormGroup>
                          <Form.Label>Nombre</Form.Label>
                          <Form.Control type='text' name="nombre" onChange={inputChangeValue} value={producto.nombre}/>
@@ -71,11 +76,13 @@ export const NuevoEmpleado = () => {
                          <Form.Label>Stock</Form.Label>
                          <Form.Control type='number' name="stock" onChange={inputChangeValue} value={producto.stock}/>
                       </FormGroup>
+
+                      <div className='mt-2'>
+                        <Button variant="primary" type="submit" className='me-2'>Guardar</Button> {/* Agregamos type="submit" */}
+                        <Button variant="secondary" onClick={volverInicio}>Volver</Button>
+                      </div>
                   </Form>
-                  <div className='mt-2'>
-                    <Button variant="primary" onClick={guardar} className='me-2'>Guardar</Button>
-                    <Button variant="secondary" onClick={volverInicio}>Volver</Button>
-                  </div>
+          
              </Col>
           </Row>
         </Container>
