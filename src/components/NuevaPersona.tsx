@@ -15,6 +15,7 @@ export const NuevoEmpleado = () => {
 
     const [producto, setproducto] = useState<IProducto>(initialProducto)
     const navigate = useNavigate()
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const inputChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
        const inputName = event.target.name
@@ -27,7 +28,27 @@ export const NuevoEmpleado = () => {
       navigate('/')
     }
 
+    const validarFormulario = () => {
+      const errores: { [key: string]: string } = {};
+      if (!producto.nombre) {
+        errores.nombre = 'El nombre es obligatorio';
+      }
+      if (producto.precio <= 0) {
+        errores.precio = 'El precio debe ser mayor que cero';
+      }
+      if (producto.stock <= 0) {
+        errores.stock = 'El stock no puede ser negativo';
+      }
+      setErrors(errores);
+      return Object.keys(errores).length === 0;
+    };
+
     const guardar = async () =>{
+
+      if (!validarFormulario()) {
+        return;
+      }
+
       try {
         const response = await fetch(`${appsetting.apiUrl}Producto`, {
           method: 'POST',
@@ -56,7 +77,6 @@ export const NuevoEmpleado = () => {
       guardar(); // Llama a la función de guardar
   }
 
-
     return(
         <Container className='mt-4'>
           <Row>
@@ -66,15 +86,38 @@ export const NuevoEmpleado = () => {
                   <Form onSubmit={handleSubmit}>
                       <FormGroup>
                          <Form.Label>Nombre</Form.Label>
-                         <Form.Control type='text' name="nombre" onChange={inputChangeValue} value={producto.nombre}/>
+                         <Form.Control 
+                         type='text' 
+                         name="nombre" 
+                         onChange={inputChangeValue} 
+                         value={producto.nombre}
+                         isInvalid={!!errors.nombre}/>
+
+                      {errors.nombre && (
+                        <Form.Control.Feedback type='invalid'>
+                          {errors.nombre}
+                        </Form.Control.Feedback>
+                      )}
+
                       </FormGroup>
                       <FormGroup>
                          <Form.Label>Precio</Form.Label>
-                         <Form.Control type='number' name="precio" onChange={inputChangeValue} value={producto.precio}/>
+                         <Form.Control type='number' name="precio" onChange={inputChangeValue} value={producto.precio}  isInvalid={!!errors.precio}/>
+                         {errors.precio && (
+                          <Form.Control.Feedback type='invalid'>
+                            {errors.precio}
+                          </Form.Control.Feedback>
+                        )}
                       </FormGroup>
                       <FormGroup>
                          <Form.Label>Stock</Form.Label>
-                         <Form.Control type='number' name="stock" onChange={inputChangeValue} value={producto.stock}/>
+                         <Form.Control type='number' name="stock" onChange={inputChangeValue} value={producto.stock}  isInvalid={!!errors.stock}/>
+                        
+                         {errors.stock && (
+                          <Form.Control.Feedback type='invalid'>
+                            {errors.stock}
+                          </Form.Control.Feedback>
+                        )}
                       </FormGroup>
 
                       <div className='mt-2'>
